@@ -3,8 +3,8 @@
 class Async 
 {
 
-	CONST CALL_RAW = 1;
-	CONST CALL_PHP = 2;
+	CONST TYPE_RAW = 1;
+	CONST TYPE_PHP = 2;
 
 
 	/**
@@ -15,8 +15,10 @@ class Async
 	 */
 	private $options = [
 		'debug' => false,
-		'type' => self::CALL_PHP,
-		'async' => true
+		'type' => self::TYPE_PHP,
+		'async' => true,
+		'tmp-dir' => '/tmp/',
+		'cleanup' => true
 	];
 
 	/**
@@ -26,6 +28,8 @@ class Async
 	 * @var array
 	 */
 	private $fifo = [];
+
+	private $savedFiles = [];
 
 
 	/**
@@ -59,16 +63,10 @@ class Async
 		foreach ($this->options as $key => $option) {
 			if (isset($options[$key])) {
 				$this->options[$key] = $options[$key];
-			}	
+			}
 		}
 	}
 
-	/**
-	 * Get all the current options, if any have been overwritten, they'll appear
-	 * here. Useful for checking the state of the object and testing it.
-	 *
-	 * @return array all the options & values.
-	 */
 	public function getOptions()
 	{
 		return $this->options;
@@ -83,21 +81,11 @@ class Async
 	 */
 	public function queue($cmd) 
 	{
-		$this->fifo[] = $this->_cleanCommand($cmd);
+		$this->fifo[] = $cmd;
 	}
 
-	private function _cleanCommand($cmd)
-	{
-		$cmd = $this->_stripSemiColon($cmd);
-		return $cmd;
-	}
-
-	private function _stripSemiColon($cmd)
-	{
-		if (substr($cmd, -1) === ";") {
-			$cmd = substr($cmd, 0, -1);
-		}
-		return $cmd;
+	public function getQueue() {
+		return $this->fifo;
 	}
 
 
@@ -127,14 +115,32 @@ class Async
 	 */
 	private function _run($command) 
 	{
-		if ($this->options['type'] === self::CALL_PHP) {
-			$cmd = "php -r \"{$command}\"";
+		if ($this->options['type'] === self::TYPE_PHP) {
+			// Old Option: Run direct from terminal (doesn't like brackets too much).
+			// $cmd = "php -r \"{$command}\"";
+
+			// New Option: Save to temp file & run it.
+			$this->savedFiles[] = $this->options['tmp-dir'] . 'async-tmp-' . time() . '.php';
+			$result = file_put_contents(
+				end($this->savedFiles),
+				$this->_generateCode($command),
+				LOCK_EX
+			);
+
+			if ($result !== false) {
+				$cmd = "php " . end($this->savedFiles);
+			}
+			else {
+				$cmd = "php --help";
+			}
 		}
 		else {
 			$cmd = $command;
 		}
 
 		if ($this->options['async']) {
+			// This forks the process.
+			// Helpful guide @ https://segment.com/blog/how-to-make-async-requests-in-php/
 			$cmd .= ' > /dev/null 2>&1 &';
 		}
 
@@ -143,7 +149,29 @@ class Async
 		if ($this->options['debug']) {
 			echo '<br />Command Run: ' . $cmd;
 		}
+
 		return $exit === 0;
+	}
+
+
+	/**
+	 * Generate the content to save to the temporary file. This adds the necessary php tags
+	 * and will optionally clean up the temp file afterwards.
+	 *
+	 * @param string $command the code to execute.
+	 *
+	 * @return string the full code to save to file.
+	 */
+	private function _generateCode($command)
+	{
+		$code = "<?php" . PHP_EOL .
+				$command . PHP_EOL;
+
+		if ($this->options['cleanup']) {
+			$code .= "unlink('" . end($this->savedFiles) . "');";
+		}
+
+		return $code;
 	}
 
 

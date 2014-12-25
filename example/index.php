@@ -1,25 +1,27 @@
 <?php
 
-$start = time(	);
-
+// Just in case: show any errors
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require 'async.php';
+// Import Library, either directly or through composer
+require __DIR__.'/../lib/Async.php';
 
-//$cmd = "curl -X POST https://sendgrid.com/api/mail.send.json -d api_user=app18440694@heroku.com -d api_key=ep7phwqi -d to=eddturtle@live.co.uk -d toname=Edd -d subject=Test -d from=edd@designedbyaturtle.co.uk -d text=testing";
+// Create some code to execute, as a string
+// We'll sleep for 10 seconds to illustrate the async is working
+// (remember to get the PHP syntax correct here)
+$cmd = "sleep(10);";
 
- $cmd = 'function add($a, $b) { return $a + $b } sleep(3); add(1, 2); exit(1);';
+// Create the async object, either simply (as show) or with options:
+// e.g. new Async([
+//          'debug'     => true,            // Will Echo out data along the way
+//          'cleanup'   => false,           // Leave the temp files around after (for debug & inspection only)
+//          'async      => false            // Turns async off, also useful for debugging & seeing the difference
+//          'type'      => Async::TYPE_RAW  // Turns off php execution, just runs as a basic command
+//      ]);
+$async = new Async([
+    'debug' => true
+]);
 
-// $cmd = "";
-
-$async = new Async();
-
-for ($i=0; $i<5; $i++) {
-	$async->queue($cmd);
-}
-
-echo '<br />Complete';
-echo '<br />Random Number: '.rand(1, 100);
-echo '<br />Time: ' . (microtime(true) - $start);
-echo '<br />';
+// Add the code we created earlier to the queue
+$async->queue($cmd);
