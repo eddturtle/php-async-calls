@@ -1,12 +1,14 @@
 PHP Async Caller
 ===============
 
-##eddturtle/php-async-calls
-
 ###What it is
 Delegate code to the Async class to manage and fork off into a new process. Useful for executing block of code which takes
 less than desirable amount of time to complete - but which you don't need to know the result of. Api calls, heavy IO interaction
 and running maintenance are some uses for this.
+
+###Warning
+This is in the vary early stages of development and executing code can be a difficult thing to achieve securely. Therefore,
+for the time being, it's not advisable to use this on a production system.
 
 ###How to use
 1. Include the `lib/Async.php` file in your code.
