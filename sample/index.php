@@ -7,11 +7,6 @@ ini_set('display_errors', 1);
 // Import Library, either directly or through composer
 require __DIR__.'/../lib/Async.php';
 
-// Create some code to execute, as a string
-// We'll sleep for 10 seconds to illustrate the async is working
-// (remember to get the PHP syntax correct here)
-$cmd = "sleep(10);";
-
 // Create the async object, either simply (as show) or with options:
 // e.g. new Async([
 //          'debug'     => true,            // Will Echo out data along the way
@@ -23,5 +18,7 @@ $async = new Async([
     'debug' => true
 ]);
 
-// Add the code we created earlier to the queue
-$async->queue($cmd);
+// Create some code to execute, as a string, and queue
+// We'll sleep for 10 seconds to illustrate the async is working
+// (remember to get the PHP syntax correct here)
+$async->queue("sleep(10);");

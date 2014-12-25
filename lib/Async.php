@@ -2,11 +2,9 @@
 
 class Async 
 {
-
 	CONST TYPE_RAW = 1;
 	CONST TYPE_PHP = 2;
-
-
+	
 	/**
 	 * An array of all the possible options and their respective
 	 * default values.
