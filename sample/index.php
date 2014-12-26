@@ -4,8 +4,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Import Library, either directly or through composer
-require __DIR__.'/../lib/Async.php';
+// Import Library, either directly or through composer's autoloader
+require "../vendor/autoload.php";
 
 // Create the async object, either simply (as show) or with options:
 // e.g. new Async([
