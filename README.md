@@ -11,14 +11,24 @@ This is in the vary early stages of development and executing code can be a diff
 for the time being, it's not advisable to use this on a production system.
 
 ###How to use
-1. Include the `lib/Async.php` file in your code.
-2. `$async = new Async();`
-3. `$async->queue("sleep(10);");`
+1. Add the library to Composer:
 
+        "require": {
+           "eddturtle/php-async-calls": "dev-master"
+        }
+2. Run `sudo composer update` in your repository
+3. Include the Composer autloader file: `require "vendor/autoload.php";`
+4. Start an Async queue:
+
+        $async = new Async();
+        $async->queue("sleep(10);");
 Running this in your browser should load the page in <100ms.
 
+Note: the queue will be processed once everything else on the page has been run, but can be kicked off manually by destroying
+the object (aka, by `$async = null`)
+
 ###Options
-Currently there 5 options available. This shows the possible options you can pass into the Async() constructor and their 
+Currently there 5 options available. This shows the possible options you can pass into the Async() constructor and their
 default settings.
 
 * `'debug' => false` If set to true, will also print out info, like what commands are being run.
