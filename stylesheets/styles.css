@@ -2,8 +2,8 @@
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#777;
+  font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:#333;
   font-weight:300;
 }
 
@@ -40,7 +40,7 @@ a {
 
 a small {
   font-size:11px;
-  color:#777;
+  color:#444;
   margin-top:-0.6em;
   display:block;
 }
@@ -131,7 +131,7 @@ header li {
 header ul a {
   line-height:1;
   font-size:11px;
-  color:#999;
+  color:#666;
   display:block;
   text-align:center;
   padding-top:6px;
